@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http; // httpという変数を通して、httpパッケージにアクセス
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:myapp/models/article.dart';
-import 'package:myapp/widgets/article_container.dart';
+import 'package:myapp/models/db.dart';
+import 'package:myapp/models/hospital.dart';
+import 'package:myapp/widgets/hospital_container.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -13,14 +11,11 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  List<Article> articles = [];
+  List<Hospital> hospitals = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Qiita Search'),
-      ),
       body: Column(
         children: [
           Padding(
@@ -33,17 +28,17 @@ class _SearchScreenState extends State<SearchScreen> {
                   color: Colors.black,
                 ),
                 decoration: InputDecoration(
-                  hintText: '検索ワードを入力してください',
+                  hintText: '病院名を入力してください',
                 ),
                 onSubmitted: (String value) async {
-                  final results = await searchQiita(value);
-                  setState(() => articles = results);
+                  final results = await searchHospital(value);
+                  setState(() => hospitals = results);
                 }),
           ),
           Expanded(
             child: ListView(
-              children: articles
-                  .map((article) => ArticleContainer(article: article))
+              children: hospitals
+                  .map((hospital) => HospitalContainer(hospital: hospital))
                   .toList(),
             ),
           ),
@@ -52,24 +47,24 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Future<List<Article>> searchQiita(String keyword) async {
-    // 1. http通信に必要なデータを準備をする
-    final uri = Uri.https('qiita.com', '/api/v2/items', {
-      'query': 'title:$keyword',
-      'per_page': '10',
-    });
-    final String token = dotenv.env['QIITA_ACCESS_TOKEN'] ?? '';
+  // MySQLデータベースから病院情報を検索・取得
+  Future<List<Hospital>> searchHospital(String value) async {
+    var results = await pool.execute(
+      "SELECT id, name, address, phone FROM hospital WHERE name LIKE :name",
+      {"name": "%$value%"}, // 検索ワードに基づいた部分一致検索
+    );
 
-    // 2. Qiita APIにリクエストを送る
-    final http.Response res = await http.get(uri, headers: {
-      'Authorization': 'Bearer $token',
-    });
-
-    // 3. 戻り値をArticleクラスの配列に変換
-    // 4. 変換したArticleクラスの配列を返す(returnする)
-    if (res.statusCode == 200) {
-      final List<dynamic> body = jsonDecode(res.body);
-      return body.map((dynamic json) => Article.fromJson(json)).toList();
+    // 取得したデータをリストに変換
+    if (results.isNotEmpty) {
+      // ResultSetRow のデータを直接 Hospital に変換
+      return results.rows.map((row) {
+        return Hospital(
+          id: row.typedColAt<int>(0) ?? 0, // id
+          name: row.colAt(1) ?? '', // name
+          address: row.colAt(2) ?? '', // address
+          phone: row.typedColAt<int>(3) ?? 0, // phone
+        );
+      }).toList();
     } else {
       return [];
     }
