@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/screens/navbar.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // packageをインポート
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:myapp/screens/search_screen.dart'; // packageをインポート
 
 // main関数をFutureに変更
 Future<void> main() async {
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
               bodyColor: Colors.white,
             ),
       ),
-      home: const NavigationExample(),
+      home: const SearchScreen(),
     );
   }
 }

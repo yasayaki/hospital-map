@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/hospital.dart';
+import 'package:myapp/screens/hospital_detail.dart';
 
 class HospitalContainer extends StatelessWidget {
   const HospitalContainer({
@@ -17,13 +18,13 @@ class HospitalContainer extends StatelessWidget {
         vertical: 12,
       ),
       child: GestureDetector(
-        // onTap: () {
-        //   Navigator.of(context).push(
-        //     MaterialPageRoute(
-        //       builder: ((context) => HospitalContainer(hospital: hospital)),
-        //     ),
-        //   );
-        // },
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: ((context) => HospitalDetail(hospital: hospital)),
+            ),
+          );
+        },
         child: Container(
           height: 180,
           padding: const EdgeInsets.symmetric(
