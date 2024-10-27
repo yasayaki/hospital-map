@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:myapp/screens/search_screen.dart'; // packageをインポート
+import 'package:myapp/views/screens/search_screen.dart'; // packageをインポート
 
 // main関数をFutureに変更
 Future<void> main() async {
