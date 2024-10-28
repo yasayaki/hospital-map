@@ -3,7 +3,7 @@ import 'package:myapp/services/db.dart';
 import 'package:myapp/models/hospital.dart';
 
 // 病院検索
-Future<List<Hospital>> searchHospital(String value) async {
+Future<List<Hospital>> getHospital(String value) async {
   var results = await pool.execute(
     "SELECT * FROM hospital WHERE name LIKE :name",
     {"name": "%$value%"}, // 検索ワードに基づいた部分一致検索
@@ -39,7 +39,7 @@ Future addHospital(String name, String address) async {
   );
 }
 
-Future<List<String>> searchDisease(String value) async {
+Future<List<String>> getDisease(String value) async {
   var diseases = await pool.execute(
       "SELECT disease.name AS disease_name FROM hospital JOIN hospital_disease ON hospital.id = hospital_disease.hospitalId JOIN disease ON hospital_disease.diseaseId = disease.id WHERE hospital.id = $value");
   // 取得したデータをリストに変換

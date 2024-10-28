@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/hospital.dart';
+import 'package:myapp/views/widgets/add_hospital.dart';
 import 'package:myapp/views/widgets/hospital_container.dart';
 import 'package:myapp/services/services.dart';
 
@@ -11,8 +12,6 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  List<TextEditingController> controllers =
-      List.generate(2, (i) => TextEditingController());
   List<Hospital> hospitals = [];
 
   @override
@@ -34,7 +33,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     hintText: '病院名を入力してください',
                   ),
                   onSubmitted: (String value) async {
-                    final searchResults = await searchHospital(value);
+                    final searchResults = await getHospital(value);
                     setState(() => hospitals = searchResults);
                   }),
             ),
@@ -51,51 +50,10 @@ class _SearchScreenState extends State<SearchScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
-            context: context,
-            builder: (BuildContext context) {
-              return Container(
-                height: 250 + MediaQuery.of(context).viewInsets.bottom,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20.0),
-                    topRight: Radius.circular(20.0),
-                  ),
-                ),
-                child: Center(
-                    child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 16.0, horizontal: 16.0),
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: controllers[0],
-                        style: const TextStyle(color: Colors.black),
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: '病院名',
-                        ),
-                      ),
-                      TextField(
-                        controller: controllers[1],
-                        style: const TextStyle(color: Colors.black),
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: '住所',
-                        ),
-                      ),
-                      ElevatedButton(
-                          onPressed: () {
-                            addHospital(
-                                controllers[0].text, controllers[1].text);
-                            Navigator.pop(context);
-                          },
-                          child: const Text('登録')),
-                    ],
-                  ),
-                )),
-              );
-            },
-          );
+              context: context,
+              builder: (BuildContext context) {
+                return const AddHospital();
+              });
         },
         backgroundColor: const Color(0xFF96CEB4),
         child: const Icon(Icons.add),

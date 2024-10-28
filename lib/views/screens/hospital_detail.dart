@@ -24,7 +24,7 @@ class _HospitalDetailState extends State<HospitalDetail> {
     _controller = TextEditingController();
 
     Future(() async {
-      final searchResults = await searchDisease(widget.hospital.id);
+      final searchResults = await getDisease(widget.hospital.id);
       setState(() => diseases = searchResults);
     });
   }
